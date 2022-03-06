@@ -121,7 +121,7 @@ var REGEXP = {
   NUMBER: /^[0-9]/,
   NOT_NUMBER_IN_NUMBER_INPUT: /[e.\-+]{,1}/,
   NOT_NUMBER: /[a-zA-z|\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/,
-  KOREAN: /[ㄱ-ㅎ|ㅏ-ㅣ]/
+  KOREAN: /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/
 };
 
 /***/ }),
@@ -716,16 +716,18 @@ var PurchaseFormView = /*#__PURE__*/function () {
         }
       });
       this.$purchaseInput.addEventListener('input', function (e) {
-        if (_constants_regexp_js__WEBPACK_IMPORTED_MODULE_2__.REGEXP.KOREAN.test(e.target.value)) {
+        var value = e.target.value;
+
+        if (_constants_regexp_js__WEBPACK_IMPORTED_MODULE_2__.REGEXP.KOREAN.test(value)) {
           e.target.value = valueAfterKeyDown;
           return;
         }
 
-        if (e.target.value === '') {
+        if (value === '') {
           return;
         }
 
-        e.target.value = removeCommaInNumber(e.target.value).toLocaleString();
+        e.target.value = removeCommaInNumber(value).toLocaleString();
       });
     }
   }, {
