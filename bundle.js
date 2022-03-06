@@ -40,16 +40,16 @@ var ID = {
   RESULT_MODAL_GRID_CONTAINER: 'result-modal-grid-container',
   RESULT_MODAL_CLOSE: 'result-modal-close',
   RESULT_MODAL_RESET: 'result-modal-reset',
-  RESULT_MODAL_PROFIT_RATIO: 'result-modal-profit-ratio'
+  RESULT_MODAL_PROFIT_RATIO: 'result-modal-profit-ratio',
+  PURCHASE_SUBMIT: 'purchase-submit'
 };
 var CLASS = {
-  LOTTO_LIST_SECTION_DISPLAY: 'lotto-list__section-display',
+  DISPLAY: 'display',
   LOTTO_LIST: 'lotto-list',
   LOTTO_LIST_TICKET: 'lotto-list__ticket',
   LOTTO_LIST_NUMBERS: 'lotto-list__numbers',
-  PICKED_NUMBERS_FORM_DISPLAY: 'picked-numbers-form-display',
   PICKED_NUMBER_INPUT: 'picked-number__input',
-  RESULT_MODAL_GRID_ITEM: 'result-modal-grid-item',
+  RESULT_MODAL_GRID_ITEM: 'result-modal__grid-item',
   UNFOLD: 'unfold',
   OPEN: 'open',
   SCROLL_BLOCK: 'scroll-block'
@@ -107,6 +107,25 @@ var ALERT_MESSAGE = {
 
 /***/ }),
 
+/***/ "./src/js/constants/regexp.js":
+/*!************************************!*\
+  !*** ./src/js/constants/regexp.js ***!
+  \************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "REGEXP": () => (/* binding */ REGEXP)
+/* harmony export */ });
+var REGEXP = {
+  NUMBER: /^[0-9]/,
+  NOT_NUMBER_IN_NUMBER_INPUT: /[e.\-+]{,1}/,
+  NOT_NUMBER: /[a-zA-z|\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/,
+  KOREAN: /[ㄱ-ㅎ|ㅏ-ㅣ]/
+};
+
+/***/ }),
+
 /***/ "./src/js/controller.js":
 /*!******************************!*\
   !*** ./src/js/controller.js ***!
@@ -118,10 +137,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ Controller)
 /* harmony export */ });
 /* harmony import */ var _model_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./model.js */ "./src/js/model.js");
-/* harmony import */ var _view_LottoList_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./view/LottoList.js */ "./src/js/view/LottoList.js");
-/* harmony import */ var _view_PurchaseForm_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./view/PurchaseForm.js */ "./src/js/view/PurchaseForm.js");
-/* harmony import */ var _utils_validation__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utils/validation */ "./src/js/utils/validation.js");
-/* harmony import */ var _view_WinningNumberView__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./view/WinningNumberView */ "./src/js/view/WinningNumberView.js");
+/* harmony import */ var _view_LottoListView_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./view/LottoListView.js */ "./src/js/view/LottoListView.js");
+/* harmony import */ var _view_PurchaseFormView_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./view/PurchaseFormView.js */ "./src/js/view/PurchaseFormView.js");
+/* harmony import */ var _view_WinningNumberView__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./view/WinningNumberView */ "./src/js/view/WinningNumberView.js");
+/* harmony import */ var _utils_validation__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utils/validation */ "./src/js/utils/validation.js");
 /* harmony import */ var _constants_lotto_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./constants/lotto.js */ "./src/js/constants/lotto.js");
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
@@ -184,17 +203,17 @@ var Controller = /*#__PURE__*/_createClass(function Controller() {
 
   _classPrivateFieldInitSpec(this, _purchaseFormView, {
     writable: true,
-    value: new _view_PurchaseForm_js__WEBPACK_IMPORTED_MODULE_2__["default"]()
+    value: new _view_PurchaseFormView_js__WEBPACK_IMPORTED_MODULE_2__["default"]()
   });
 
   _classPrivateFieldInitSpec(this, _lottoListView, {
     writable: true,
-    value: new _view_LottoList_js__WEBPACK_IMPORTED_MODULE_1__["default"]()
+    value: new _view_LottoListView_js__WEBPACK_IMPORTED_MODULE_1__["default"]()
   });
 
   _classPrivateFieldInitSpec(this, _winningNumberView, {
     writable: true,
-    value: new _view_WinningNumberView__WEBPACK_IMPORTED_MODULE_4__.WinningNumberView()
+    value: new _view_WinningNumberView__WEBPACK_IMPORTED_MODULE_3__["default"]()
   });
 
   _classPrivateMethodGet(this, _bindEventHandlers, _bindEventHandlers2).call(this);
@@ -218,11 +237,13 @@ function _bindEventHandlers2() {
 
 function _handleSubmitCash2(cash) {
   try {
-    (0,_utils_validation__WEBPACK_IMPORTED_MODULE_3__.validateCashInput)(cash);
+    (0,_utils_validation__WEBPACK_IMPORTED_MODULE_4__.validateCashInput)(cash);
 
     _classPrivateFieldGet(this, _model).setCash(cash);
 
-    _classPrivateFieldGet(this, _model).buyLotto(cash / _constants_lotto_js__WEBPACK_IMPORTED_MODULE_5__.LOTTO_PRICE);
+    _classPrivateFieldGet(this, _model).buyLotto(cash);
+
+    _classPrivateFieldGet(this, _purchaseFormView).disableSubmit();
 
     _classPrivateFieldGet(this, _lottoListView).showLottoListSection(_classPrivateFieldGet(this, _model).getLottoList());
 
@@ -237,7 +258,7 @@ function _handleSubmitCash2(cash) {
 
 function _handleCheckResult2(pickedNumbers) {
   try {
-    (0,_utils_validation__WEBPACK_IMPORTED_MODULE_3__.validatePickedNumbers)(pickedNumbers);
+    (0,_utils_validation__WEBPACK_IMPORTED_MODULE_4__.validatePickedNumbers)(pickedNumbers);
 
     _classPrivateFieldGet(this, _model).setWinningLottoQuantity(pickedNumbers);
 
@@ -260,6 +281,8 @@ function _handleRestart2() {
   _classPrivateFieldGet(this, _purchaseFormView).clearInput();
 
   _classPrivateFieldGet(this, _winningNumberView).clearInputs();
+
+  _classPrivateFieldGet(this, _purchaseFormView).enableSubmit();
 }
 
 
@@ -357,12 +380,6 @@ var Model = /*#__PURE__*/function () {
     key: "getLottoList",
     value: function getLottoList() {
       return _classPrivateFieldGet(this, _lottoList);
-    } // 테스트를 위한 메서드
-
-  }, {
-    key: "setLottoList",
-    value: function setLottoList(lottoList) {
-      _classPrivateFieldSet(this, _lottoList, lottoList);
     }
   }, {
     key: "getWinningLottoQuantity",
@@ -371,10 +388,10 @@ var Model = /*#__PURE__*/function () {
     }
   }, {
     key: "buyLotto",
-    value: function buyLotto(quantity) {
+    value: function buyLotto(cash) {
       _classPrivateFieldSet(this, _lottoList, []);
 
-      for (var i = 0; i < quantity; i++) {
+      for (var i = 0; i < cash / _constants_lotto__WEBPACK_IMPORTED_MODULE_0__.LOTTO_PRICE; i++) {
         _classPrivateFieldGet(this, _lottoList).push(this.makeLottoNumbers());
       }
     }
@@ -512,10 +529,10 @@ var validatePickedNumbers = function validatePickedNumbers(pickedNumbers) {
 
 /***/ }),
 
-/***/ "./src/js/view/LottoList.js":
-/*!**********************************!*\
-  !*** ./src/js/view/LottoList.js ***!
-  \**********************************/
+/***/ "./src/js/view/LottoListView.js":
+/*!**************************************!*\
+  !*** ./src/js/view/LottoListView.js ***!
+  \**************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -583,12 +600,12 @@ var LottoListView = /*#__PURE__*/function () {
   }, {
     key: "displayLottoListSection",
     value: function displayLottoListSection() {
-      this.$lottoListSection.classList.add(_constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.CLASS.LOTTO_LIST_SECTION_DISPLAY);
+      (0,_utils_dom_js__WEBPACK_IMPORTED_MODULE_1__.addClassName)(this.$lottoListSection, _constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.CLASS.DISPLAY);
     }
   }, {
     key: "displayNoneLottoListSection",
     value: function displayNoneLottoListSection() {
-      this.$lottoListSection.classList.remove(_constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.CLASS.LOTTO_LIST_SECTION_DISPLAY);
+      (0,_utils_dom_js__WEBPACK_IMPORTED_MODULE_1__.removeClassName)(this.$lottoListSection, _constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.CLASS.DISPLAY);
     }
   }]);
 
@@ -628,10 +645,10 @@ function lottoListTemplate(lottoList) {
 
 /***/ }),
 
-/***/ "./src/js/view/PurchaseForm.js":
-/*!*************************************!*\
-  !*** ./src/js/view/PurchaseForm.js ***!
-  \*************************************/
+/***/ "./src/js/view/PurchaseFormView.js":
+/*!*****************************************!*\
+  !*** ./src/js/view/PurchaseFormView.js ***!
+  \*****************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -640,6 +657,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _utils_dom_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/dom.js */ "./src/js/utils/dom.js");
 /* harmony import */ var _constants_attribute_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../constants/attribute.js */ "./src/js/constants/attribute.js");
+/* harmony import */ var _constants_regexp_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../constants/regexp.js */ "./src/js/constants/regexp.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -651,6 +669,7 @@ function _classPrivateMethodInitSpec(obj, privateSet) { _checkPrivateRedeclarati
 function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
 
 function _classPrivateMethodGet(receiver, privateSet, fn) { if (!privateSet.has(receiver)) { throw new TypeError("attempted to get private field on non-instance"); } return fn; }
+
 
 
 
@@ -684,15 +703,42 @@ var PurchaseFormView = /*#__PURE__*/function () {
   }, {
     key: "bindAddCommaInNumber",
     value: function bindAddCommaInNumber() {
-      this.$purchaseInput.addEventListener('keyup', function (_ref) {
-        var target = _ref.target;
-
-        if (target.value === '') {
+      var valueAfterKeyDown;
+      this.$purchaseInput.addEventListener('keydown', function (e) {
+        if (_constants_regexp_js__WEBPACK_IMPORTED_MODULE_2__.REGEXP.NOT_NUMBER.test(e.key) && e.key.length === 1) {
+          e.preventDefault();
           return;
         }
 
-        target.value = removeCommaInNumber(target.value).toLocaleString();
+        if (_constants_regexp_js__WEBPACK_IMPORTED_MODULE_2__.REGEXP.KOREAN.test(e.key)) {
+          valueAfterKeyDown = e.target.value;
+          return;
+        }
       });
+      this.$purchaseInput.addEventListener('input', function (e) {
+        if (_constants_regexp_js__WEBPACK_IMPORTED_MODULE_2__.REGEXP.KOREAN.test(e.target.value)) {
+          e.target.value = valueAfterKeyDown;
+          return;
+        }
+
+        if (e.target.value === '') {
+          return;
+        }
+
+        e.target.value = removeCommaInNumber(e.target.value).toLocaleString();
+      });
+    }
+  }, {
+    key: "disableSubmit",
+    value: function disableSubmit() {
+      this.$purchaseInput.disabled = true;
+      this.$purchaseSubmit.disabled = true;
+    }
+  }, {
+    key: "enableSubmit",
+    value: function enableSubmit() {
+      this.$purchaseInput.disabled = false;
+      this.$purchaseSubmit.disabled = false;
     }
   }]);
 
@@ -702,6 +748,7 @@ var PurchaseFormView = /*#__PURE__*/function () {
 function _configureDOM2() {
   this.$purchaseForm = (0,_utils_dom_js__WEBPACK_IMPORTED_MODULE_0__.$)(_constants_attribute_js__WEBPACK_IMPORTED_MODULE_1__.ID.PURCHASE_FORM);
   this.$purchaseInput = (0,_utils_dom_js__WEBPACK_IMPORTED_MODULE_0__.$)(_constants_attribute_js__WEBPACK_IMPORTED_MODULE_1__.ID.PURCHASE_INPUT);
+  this.$purchaseSubmit = (0,_utils_dom_js__WEBPACK_IMPORTED_MODULE_0__.$)(_constants_attribute_js__WEBPACK_IMPORTED_MODULE_1__.ID.PURCHASE_SUBMIT);
 }
 
 
@@ -720,11 +767,12 @@ function removeCommaInNumber(value) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "WinningNumberView": () => (/* binding */ WinningNumberView)
+/* harmony export */   "default": () => (/* binding */ WinningNumberView)
 /* harmony export */ });
 /* harmony import */ var _constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../constants/attribute.js */ "./src/js/constants/attribute.js");
 /* harmony import */ var _constants_lotto_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../constants/lotto.js */ "./src/js/constants/lotto.js");
-/* harmony import */ var _utils_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/dom */ "./src/js/utils/dom.js");
+/* harmony import */ var _constants_regexp_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../constants/regexp.js */ "./src/js/constants/regexp.js");
+/* harmony import */ var _utils_dom__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/dom */ "./src/js/utils/dom.js");
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -748,6 +796,7 @@ function _classPrivateMethodInitSpec(obj, privateSet) { _checkPrivateRedeclarati
 function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
 
 function _classPrivateMethodGet(receiver, privateSet, fn) { if (!privateSet.has(receiver)) { throw new TypeError("attempted to get private field on non-instance"); } return fn; }
+
 
 
 
@@ -815,6 +864,16 @@ var WinningNumberView = /*#__PURE__*/function () {
         $input.addEventListener('input', function () {
           _classPrivateMethodGet(_this3, _moveFocusHandler, _moveFocusHandler2).call(_this3, $input);
         });
+        $input.addEventListener('keydown', function (e) {
+          if (_constants_regexp_js__WEBPACK_IMPORTED_MODULE_2__.REGEXP.NOT_NUMBER_IN_NUMBER_INPUT.test(e.key)) {
+            e.preventDefault();
+            return;
+          }
+
+          if (e.target.value.length === 2 && _constants_regexp_js__WEBPACK_IMPORTED_MODULE_2__.REGEXP.NUMBER.test(e.key)) {
+            e.preventDefault();
+          }
+        });
         $input.addEventListener('keyup', function (e) {
           if (e.key === 'Backspace' && $input.value.length === 0) {
             var _Array$from$slice$rev;
@@ -834,24 +893,24 @@ var WinningNumberView = /*#__PURE__*/function () {
   }, {
     key: "displayPickedNumbersForm",
     value: function displayPickedNumbersForm() {
-      (0,_utils_dom__WEBPACK_IMPORTED_MODULE_2__.addClassName)(this.$pickedNumbersForm, _constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.CLASS.PICKED_NUMBERS_FORM_DISPLAY);
+      (0,_utils_dom__WEBPACK_IMPORTED_MODULE_3__.addClassName)(this.$pickedNumbersForm, _constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.CLASS.DISPLAY);
     }
   }, {
     key: "displayNonePickedNumbersForm",
     value: function displayNonePickedNumbersForm() {
-      (0,_utils_dom__WEBPACK_IMPORTED_MODULE_2__.removeClassName)(this.$pickedNumbersForm, _constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.CLASS.PICKED_NUMBERS_FORM_DISPLAY);
+      (0,_utils_dom__WEBPACK_IMPORTED_MODULE_3__.removeClassName)(this.$pickedNumbersForm, _constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.CLASS.DISPLAY);
     }
   }, {
     key: "displayResultModal",
     value: function displayResultModal() {
-      (0,_utils_dom__WEBPACK_IMPORTED_MODULE_2__.addClassName)(this.$resultModalBackground, _constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.CLASS.OPEN);
-      (0,_utils_dom__WEBPACK_IMPORTED_MODULE_2__.addClassName)(this.$body, _constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.CLASS.SCROLL_BLOCK);
+      (0,_utils_dom__WEBPACK_IMPORTED_MODULE_3__.addClassName)(this.$resultModalBackground, _constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.CLASS.OPEN);
+      (0,_utils_dom__WEBPACK_IMPORTED_MODULE_3__.addClassName)(this.$body, _constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.CLASS.SCROLL_BLOCK);
     }
   }, {
     key: "displayNoneResultModal",
     value: function displayNoneResultModal() {
-      (0,_utils_dom__WEBPACK_IMPORTED_MODULE_2__.removeClassName)(this.$resultModalBackground, _constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.CLASS.OPEN);
-      (0,_utils_dom__WEBPACK_IMPORTED_MODULE_2__.removeClassName)(this.$body, _constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.CLASS.SCROLL_BLOCK);
+      (0,_utils_dom__WEBPACK_IMPORTED_MODULE_3__.removeClassName)(this.$resultModalBackground, _constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.CLASS.OPEN);
+      (0,_utils_dom__WEBPACK_IMPORTED_MODULE_3__.removeClassName)(this.$body, _constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.CLASS.SCROLL_BLOCK);
     }
   }, {
     key: "clearInputs",
@@ -862,7 +921,7 @@ var WinningNumberView = /*#__PURE__*/function () {
     key: "showLottoResult",
     value: function showLottoResult(winningLottoQuantity, profitRatio) {
       this.displayResultModal();
-      (0,_utils_dom__WEBPACK_IMPORTED_MODULE_2__.replaceHTML)(this.$resultModalGridContainer, resultGridTemplate(winningLottoQuantity));
+      (0,_utils_dom__WEBPACK_IMPORTED_MODULE_3__.replaceHTML)(this.$resultModalGridContainer, resultGridTemplate(winningLottoQuantity));
       this.$resultModalProfitRatio.textContent = profitRatio.toLocaleString();
     }
   }]);
@@ -871,13 +930,13 @@ var WinningNumberView = /*#__PURE__*/function () {
 }();
 
 function _configureDOM2() {
-  this.$pickedNumbersForm = (0,_utils_dom__WEBPACK_IMPORTED_MODULE_2__.$)(_constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.ID.PICKED_NUMBERS_FORM);
-  this.$resultModalBackground = (0,_utils_dom__WEBPACK_IMPORTED_MODULE_2__.$)(_constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.ID.RESULT_MODAL_BACKGROUND);
-  this.$resultModalGridContainer = (0,_utils_dom__WEBPACK_IMPORTED_MODULE_2__.$)(_constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.ID.RESULT_MODAL_GRID_CONTAINER);
-  this.$resultModalClose = (0,_utils_dom__WEBPACK_IMPORTED_MODULE_2__.$)(_constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.ID.RESULT_MODAL_CLOSE);
-  this.$resultModalReset = (0,_utils_dom__WEBPACK_IMPORTED_MODULE_2__.$)(_constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.ID.RESULT_MODAL_RESET);
-  this.$resultModalProfitRatio = (0,_utils_dom__WEBPACK_IMPORTED_MODULE_2__.$)(_constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.ID.RESULT_MODAL_PROFIT_RATIO);
-  this.$pickedNumberInputs = (0,_utils_dom__WEBPACK_IMPORTED_MODULE_2__.$$)(_constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.CLASS.PICKED_NUMBER_INPUT);
+  this.$pickedNumbersForm = (0,_utils_dom__WEBPACK_IMPORTED_MODULE_3__.$)(_constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.ID.PICKED_NUMBERS_FORM);
+  this.$resultModalBackground = (0,_utils_dom__WEBPACK_IMPORTED_MODULE_3__.$)(_constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.ID.RESULT_MODAL_BACKGROUND);
+  this.$resultModalGridContainer = (0,_utils_dom__WEBPACK_IMPORTED_MODULE_3__.$)(_constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.ID.RESULT_MODAL_GRID_CONTAINER);
+  this.$resultModalClose = (0,_utils_dom__WEBPACK_IMPORTED_MODULE_3__.$)(_constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.ID.RESULT_MODAL_CLOSE);
+  this.$resultModalReset = (0,_utils_dom__WEBPACK_IMPORTED_MODULE_3__.$)(_constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.ID.RESULT_MODAL_RESET);
+  this.$resultModalProfitRatio = (0,_utils_dom__WEBPACK_IMPORTED_MODULE_3__.$)(_constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.ID.RESULT_MODAL_PROFIT_RATIO);
+  this.$pickedNumberInputs = (0,_utils_dom__WEBPACK_IMPORTED_MODULE_3__.$$)(_constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.CLASS.PICKED_NUMBER_INPUT);
   this.$body = document.querySelector('body');
 }
 
@@ -890,6 +949,8 @@ function _moveFocusHandler2($element) {
     })) === null || _Array$from$find === void 0 ? void 0 : _Array$from$find.focus();
   }
 }
+
+
 
 function resultGridTemplate(winningLottoQuantity) {
   return "<div class=\"".concat(_constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.CLASS.RESULT_MODAL_GRID_ITEM, "\">\uC77C\uCE58 \uAC1C\uC218</div>\n    <div class=\"").concat(_constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.CLASS.RESULT_MODAL_GRID_ITEM, "\">\uB2F9\uCCA8\uAE08</div>\n    <div class=\"").concat(_constants_attribute_js__WEBPACK_IMPORTED_MODULE_0__.CLASS.RESULT_MODAL_GRID_ITEM, "\">\uB2F9\uCCA8 \uAC2F\uC218</div>") + Object.keys(_constants_lotto_js__WEBPACK_IMPORTED_MODULE_1__.WINNING_PRIZE).map(function (key) {
@@ -918,7 +979,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ":root {\n  --color-primary: #00bcd4;\n  --color-lighten: #80deea;\n  --color-placeholder: #8b8b8b;\n  --color-border: #b4b4b4;\n  --color-white: white;\n  --color-dimmed: rgba(0, 0, 0, 0.5);\n  --color-unchecked-round: #ededed;\n  --color-unchecked-slide: rgba(33, 33, 33, 0.08);\n  --color-body: #f9f9f9;\n  --color-main-border: rgba(0, 0, 0, 0.12);\n  --color-grid-border: #dcdcdc;\n}\n\n* {\n  box-sizing: border-box;\n  margin: 0;\n  padding: 0;\n}\n\nli {\n  list-style: none;\n}\n\np,\nlabel {\n  line-height: 24px;\n}\n\nhtml {\n  width: 100%;\n  height: auto;\n  min-height: 100vh;\n}\n\nbody {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  height: auto;\n  background-color: var(--color-body);\n  min-height: 100vh;\n}\n\ninput:focus {\n  border-color: blue;\n}\n\n.scroll-block {\n  overflow: hidden;\n}\n\nmain {\n  background-color: var(--color-white);\n  border: 1px solid var(--color-main-border);\n  border-radius: 4px;\n  min-height: 727px;\n  position: relative;\n}\n\ninput {\n  border: 1px solid var(--color-border);\n  outline: 0;\n  border-radius: 4px;\n}\n\ninput::placeholder {\n  color: var(--color-placeholder);\n}\n\nbutton {\n  background-color: var(--color-primary);\n  color: var(--color-white);\n  border: none;\n  border-radius: 4px;\n  cursor: pointer;\n}\n\n#app {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  width: 414px;\n  padding: 0 16px;\n}\n\nh1 {\n  margin-top: 52px;\n  margin-bottom: 16px;\n  line-height: 36px;\n}\n\n.purchase__form {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-start;\n  margin-bottom: 28px;\n  width: 100%;\n}\n\n.purchase__description {\n  font-size: 15px;\n}\n\n.purchase__input-container {\n  display: flex;\n  justify-content: space-between;\n}\n\n.purchase__input {\n  width: 310px;\n  height: 36px;\n  margin-right: 16px;\n  padding-left: 8px;\n}\n\n.purchase__submit {\n  width: 56px;\n  height: 36px;\n}\n\n.lotto-list__section {\n  width: 100%;\n  margin-bottom: 14px;\n  display: none;\n}\n\n.lotto-list__section-display {\n  display: block;\n}\n\n.lotto-list__header {\n  display: flex;\n  justify-content: space-between;\n}\n\n.lotto-list__description {\n  font-size: 15px;\n  font-weight: 400;\n}\n\n.lotto-list__toggle-container {\n  display: flex;\n  flex-direction: column;\n  position: relative;\n}\n\n.toggle {\n  position: absolute;\n  display: inline-block;\n  bottom: -29px;\n  right: 34px;\n}\n\n.toggle .lotto-list__toggle-input {\n  opacity: 0;\n  width: 0;\n  height: 0;\n}\n\n.slider {\n  position: absolute;\n  cursor: pointer;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  background-color: var(--color-unchecked-slide);\n  -webkit-transition: 0.4s;\n  transition: 0.4s;\n}\n\n.slider:before {\n  position: absolute;\n  content: '';\n  height: 20px;\n  width: 20px;\n  left: 0px;\n  bottom: -3px;\n  background-color: var(--color-unchecked-round);\n  -webkit-transition: 0.4s;\n  transition: 0.4s;\n  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.68);\n}\n\n.slider.round {\n  border-radius: 34px;\n  width: 34px;\n  height: 14px;\n}\n\n.slider.round:before {\n  border-radius: 50%;\n}\n\n.lotto-list__toggle-input:checked + .slider:before {\n  -webkit-transform: translateX(14px);\n  -ms-transform: translateX(14px);\n  transform: translateX(14px);\n  background-color: var(--color-primary);\n}\n\n.lotto-list__toggle-input:checked + .slider {\n  background-color: var(--color-lighten);\n}\n\n.lotto-lists {\n  display: flex;\n  flex-wrap: wrap;\n  margin-right: 40px;\n}\n\n.lotto-lists.unfold {\n  flex-direction: column;\n}\n\n.lotto-list {\n  display: flex;\n  align-items: center;\n}\n\n.lotto-list__ticket {\n  display: inline-block;\n  font-size: 34px;\n  margin-right: 8px;\n}\n\n.lotto-list__ticket:last-child {\n  margin-right: 0;\n}\n\n.lotto-list__numbers {\n  display: none;\n}\n\n.lotto-lists.unfold .lotto-list__numbers {\n  display: inline;\n}\n\n.picked-numbers-form {\n  width: 100%;\n  font-size: 15px;\n  display: none;\n}\n\n.picked-numbers-form-display {\n  display: block;\n}\n\n.picked-numbers__description {\n  letter-spacing: 0.5px;\n  margin-bottom: 8px;\n}\n\n.picked-numbers__container {\n  display: flex;\n  justify-content: space-between;\n  margin-bottom: 24px;\n}\n\n.picked-number__description {\n  display: block;\n  margin-bottom: 8px;\n}\n\n.picked-number__input {\n  width: 35px;\n  height: 35px;\n  margin-left: 8px;\n}\n\n.picked-number__input:first-of-type {\n  margin-left: 0;\n}\n\n.bonus-number__box {\n  text-align: right;\n}\n\n.picked-numbers__check-button {\n  width: 100%;\n  height: 36px;\n}\n\n.result-modal-background {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  display: none;\n  justify-content: center;\n  align-items: center;\n  background-color: var(--color-dimmed);\n}\n\n.result-modal-background.open {\n  display: flex;\n}\n\n.result-modal-section {\n  position: relative;\n  width: 350px;\n  height: 500px;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  padding: 40px 16px 49px;\n  background-color: var(--color-white);\n  border-radius: 4px;\n}\n\n.result-modal-heading2 {\n  font-size: 20px;\n  margin-bottom: 32px;\n}\n\n.result-modal-grid-container {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-template-rows: repeat(6, 1fr);\n  width: 100%;\n  margin-bottom: 16px;\n}\n\n.result-modal-grid-item {\n  line-height: 24px;\n  height: 40px;\n  text-align: center;\n  padding: 8px 0;\n  border-bottom: 1px solid var(--color-grid-border);\n}\n\n.result-modal-grid-item:nth-child(1),\n.result-modal-grid-item:nth-child(2),\n.result-modal-grid-item:nth-child(3) {\n  font-weight: 600;\n  border-top: 1px solid var(--color-grid-border);\n}\n\n.result-modal-profit-ratio-description {\n  font-weight: 600;\n  margin-bottom: 32px;\n}\n\n.result-modal-close {\n  background-color: var(--color-white);\n  color: black;\n  width: 14px;\n  height: 14px;\n  position: absolute;\n  top: 16px;\n  right: 16px;\n}\n\n.result-modal-reset {\n  width: 152px;\n  height: 36px;\n}\n", "",{"version":3,"sources":["webpack://./src/css/index.css"],"names":[],"mappings":"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","sourcesContent":[":root {\n  --color-primary: #00bcd4;\n  --color-lighten: #80deea;\n  --color-placeholder: #8b8b8b;\n  --color-border: #b4b4b4;\n  --color-white: white;\n  --color-dimmed: rgba(0, 0, 0, 0.5);\n  --color-unchecked-round: #ededed;\n  --color-unchecked-slide: rgba(33, 33, 33, 0.08);\n  --color-body: #f9f9f9;\n  --color-main-border: rgba(0, 0, 0, 0.12);\n  --color-grid-border: #dcdcdc;\n}\n\n* {\n  box-sizing: border-box;\n  margin: 0;\n  padding: 0;\n}\n\nli {\n  list-style: none;\n}\n\np,\nlabel {\n  line-height: 24px;\n}\n\nhtml {\n  width: 100%;\n  height: auto;\n  min-height: 100vh;\n}\n\nbody {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  height: auto;\n  background-color: var(--color-body);\n  min-height: 100vh;\n}\n\ninput:focus {\n  border-color: blue;\n}\n\n.scroll-block {\n  overflow: hidden;\n}\n\nmain {\n  background-color: var(--color-white);\n  border: 1px solid var(--color-main-border);\n  border-radius: 4px;\n  min-height: 727px;\n  position: relative;\n}\n\ninput {\n  border: 1px solid var(--color-border);\n  outline: 0;\n  border-radius: 4px;\n}\n\ninput::placeholder {\n  color: var(--color-placeholder);\n}\n\nbutton {\n  background-color: var(--color-primary);\n  color: var(--color-white);\n  border: none;\n  border-radius: 4px;\n  cursor: pointer;\n}\n\n#app {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  width: 414px;\n  padding: 0 16px;\n}\n\nh1 {\n  margin-top: 52px;\n  margin-bottom: 16px;\n  line-height: 36px;\n}\n\n.purchase__form {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-start;\n  margin-bottom: 28px;\n  width: 100%;\n}\n\n.purchase__description {\n  font-size: 15px;\n}\n\n.purchase__input-container {\n  display: flex;\n  justify-content: space-between;\n}\n\n.purchase__input {\n  width: 310px;\n  height: 36px;\n  margin-right: 16px;\n  padding-left: 8px;\n}\n\n.purchase__submit {\n  width: 56px;\n  height: 36px;\n}\n\n.lotto-list__section {\n  width: 100%;\n  margin-bottom: 14px;\n  display: none;\n}\n\n.lotto-list__section-display {\n  display: block;\n}\n\n.lotto-list__header {\n  display: flex;\n  justify-content: space-between;\n}\n\n.lotto-list__description {\n  font-size: 15px;\n  font-weight: 400;\n}\n\n.lotto-list__toggle-container {\n  display: flex;\n  flex-direction: column;\n  position: relative;\n}\n\n.toggle {\n  position: absolute;\n  display: inline-block;\n  bottom: -29px;\n  right: 34px;\n}\n\n.toggle .lotto-list__toggle-input {\n  opacity: 0;\n  width: 0;\n  height: 0;\n}\n\n.slider {\n  position: absolute;\n  cursor: pointer;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  background-color: var(--color-unchecked-slide);\n  -webkit-transition: 0.4s;\n  transition: 0.4s;\n}\n\n.slider:before {\n  position: absolute;\n  content: '';\n  height: 20px;\n  width: 20px;\n  left: 0px;\n  bottom: -3px;\n  background-color: var(--color-unchecked-round);\n  -webkit-transition: 0.4s;\n  transition: 0.4s;\n  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.68);\n}\n\n.slider.round {\n  border-radius: 34px;\n  width: 34px;\n  height: 14px;\n}\n\n.slider.round:before {\n  border-radius: 50%;\n}\n\n.lotto-list__toggle-input:checked + .slider:before {\n  -webkit-transform: translateX(14px);\n  -ms-transform: translateX(14px);\n  transform: translateX(14px);\n  background-color: var(--color-primary);\n}\n\n.lotto-list__toggle-input:checked + .slider {\n  background-color: var(--color-lighten);\n}\n\n.lotto-lists {\n  display: flex;\n  flex-wrap: wrap;\n  margin-right: 40px;\n}\n\n.lotto-lists.unfold {\n  flex-direction: column;\n}\n\n.lotto-list {\n  display: flex;\n  align-items: center;\n}\n\n.lotto-list__ticket {\n  display: inline-block;\n  font-size: 34px;\n  margin-right: 8px;\n}\n\n.lotto-list__ticket:last-child {\n  margin-right: 0;\n}\n\n.lotto-list__numbers {\n  display: none;\n}\n\n.lotto-lists.unfold .lotto-list__numbers {\n  display: inline;\n}\n\n.picked-numbers-form {\n  width: 100%;\n  font-size: 15px;\n  display: none;\n}\n\n.picked-numbers-form-display {\n  display: block;\n}\n\n.picked-numbers__description {\n  letter-spacing: 0.5px;\n  margin-bottom: 8px;\n}\n\n.picked-numbers__container {\n  display: flex;\n  justify-content: space-between;\n  margin-bottom: 24px;\n}\n\n.picked-number__description {\n  display: block;\n  margin-bottom: 8px;\n}\n\n.picked-number__input {\n  width: 35px;\n  height: 35px;\n  margin-left: 8px;\n}\n\n.picked-number__input:first-of-type {\n  margin-left: 0;\n}\n\n.bonus-number__box {\n  text-align: right;\n}\n\n.picked-numbers__check-button {\n  width: 100%;\n  height: 36px;\n}\n\n.result-modal-background {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  display: none;\n  justify-content: center;\n  align-items: center;\n  background-color: var(--color-dimmed);\n}\n\n.result-modal-background.open {\n  display: flex;\n}\n\n.result-modal-section {\n  position: relative;\n  width: 350px;\n  height: 500px;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  padding: 40px 16px 49px;\n  background-color: var(--color-white);\n  border-radius: 4px;\n}\n\n.result-modal-heading2 {\n  font-size: 20px;\n  margin-bottom: 32px;\n}\n\n.result-modal-grid-container {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-template-rows: repeat(6, 1fr);\n  width: 100%;\n  margin-bottom: 16px;\n}\n\n.result-modal-grid-item {\n  line-height: 24px;\n  height: 40px;\n  text-align: center;\n  padding: 8px 0;\n  border-bottom: 1px solid var(--color-grid-border);\n}\n\n.result-modal-grid-item:nth-child(1),\n.result-modal-grid-item:nth-child(2),\n.result-modal-grid-item:nth-child(3) {\n  font-weight: 600;\n  border-top: 1px solid var(--color-grid-border);\n}\n\n.result-modal-profit-ratio-description {\n  font-weight: 600;\n  margin-bottom: 32px;\n}\n\n.result-modal-close {\n  background-color: var(--color-white);\n  color: black;\n  width: 14px;\n  height: 14px;\n  position: absolute;\n  top: 16px;\n  right: 16px;\n}\n\n.result-modal-reset {\n  width: 152px;\n  height: 36px;\n}\n"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, ":root {\n  --color-primary: #00bcd4;\n  --color-lighten: #80deea;\n  --color-placeholder: #8b8b8b;\n  --color-border: #b4b4b4;\n  --color-white: white;\n  --color-dimmed: rgba(0, 0, 0, 0.5);\n  --color-unchecked-round: #ededed;\n  --color-unchecked-slide: rgba(33, 33, 33, 0.08);\n  --color-body: #f9f9f9;\n  --color-main-border: rgba(0, 0, 0, 0.12);\n  --color-grid-border: #dcdcdc;\n  --color-disabled: #ccc;\n}\n\n* {\n  box-sizing: border-box;\n  margin: 0;\n  padding: 0;\n}\n\nli {\n  list-style: none;\n}\n\np,\nlabel {\n  line-height: 24px;\n}\n\nhtml {\n  width: 100%;\n  min-height: 100vh;\n}\n\nbody {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  background-color: var(--color-body);\n  min-height: 100vh;\n}\n\ninput::-webkit-outer-spin-button,\ninput::-webkit-inner-spin-button {\n  -webkit-appearance: none;\n}\n\ninput:focus {\n  border-color: blue;\n}\n\ninput:disabled {\n  background-color: var(--color-disabled);\n}\n\nbutton:disabled {\n  background-color: var(--color-disabled);\n}\n\n.scroll-block {\n  overflow: hidden !important;\n}\n\n.display {\n  display: block !important;\n}\n\nmain {\n  background-color: var(--color-white);\n  border: 1px solid var(--color-main-border);\n  border-radius: 4px;\n  min-height: 727px;\n  position: relative;\n}\n\ninput {\n  border: 1px solid var(--color-border);\n  outline: 0;\n  border-radius: 4px;\n}\n\ninput::placeholder {\n  color: var(--color-placeholder);\n}\n\nbutton {\n  background-color: var(--color-primary);\n  color: var(--color-white);\n  border: none;\n  border-radius: 4px;\n  cursor: pointer;\n}\n\n#app {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  width: 414px;\n  padding: 0 16px;\n}\n\nh1 {\n  margin-top: 52px;\n  margin-bottom: 16px;\n  line-height: 36px;\n}\n\n.purchase__form {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-start;\n  margin-bottom: 28px;\n  width: 100%;\n}\n\n.purchase__description {\n  font-size: 15px;\n}\n\n.purchase__input-container {\n  display: flex;\n  justify-content: space-between;\n}\n\n.purchase__input {\n  width: 310px;\n  height: 36px;\n  margin-right: 16px;\n  padding-left: 8px;\n}\n\n.purchase__submit {\n  width: 56px;\n  height: 36px;\n}\n\n.lotto-list__section {\n  width: 100%;\n  margin-bottom: 14px;\n  display: none;\n}\n\n.lotto-list__header {\n  display: flex;\n  justify-content: space-between;\n}\n\n.lotto-list__description {\n  font-size: 15px;\n  font-weight: 400;\n}\n\n.lotto-list__toggle-container {\n  display: flex;\n  flex-direction: column;\n  position: relative;\n}\n\n.toggle {\n  position: absolute;\n  display: inline-block;\n  bottom: -29px;\n  right: 34px;\n}\n\n.toggle .lotto-list__toggle-input {\n  opacity: 0;\n  width: 0;\n  height: 0;\n}\n\n.slider {\n  position: absolute;\n  cursor: pointer;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  background-color: var(--color-unchecked-slide);\n  -webkit-transition: 0.4s;\n  transition: 0.4s;\n}\n\n.slider:before {\n  position: absolute;\n  content: '';\n  height: 20px;\n  width: 20px;\n  left: 0px;\n  bottom: -3px;\n  background-color: var(--color-unchecked-round);\n  -webkit-transition: 0.4s;\n  transition: 0.4s;\n  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.68);\n}\n\n.slider.round {\n  border-radius: 34px;\n  width: 34px;\n  height: 14px;\n}\n\n.slider.round:before {\n  border-radius: 50%;\n}\n\n.lotto-list__toggle-input:checked + .slider:before {\n  -webkit-transform: translateX(14px);\n  -ms-transform: translateX(14px);\n  transform: translateX(14px);\n  background-color: var(--color-primary);\n}\n\n.lotto-list__toggle-input:checked + .slider {\n  background-color: var(--color-lighten);\n}\n\n.lotto-lists {\n  display: flex;\n  flex-wrap: wrap;\n  margin-right: 40px;\n}\n\n.lotto-lists.unfold {\n  flex-direction: column;\n}\n\n.lotto-list {\n  display: flex;\n  align-items: center;\n}\n\n.lotto-list__ticket {\n  display: inline-block;\n  font-size: 34px;\n  margin-right: 8px;\n}\n\n.lotto-list__ticket:last-child {\n  margin-right: 0;\n}\n\n.lotto-list__numbers {\n  display: none;\n}\n\n.lotto-lists.unfold .lotto-list__numbers {\n  display: inline;\n}\n\n.picked-numbers-form {\n  width: 100%;\n  font-size: 15px;\n  display: none;\n}\n\n.picked-numbers__description {\n  letter-spacing: 0.5px;\n  margin-bottom: 8px;\n}\n\n.picked-numbers__container {\n  display: flex;\n  justify-content: space-between;\n  margin-bottom: 24px;\n}\n\n.picked-number__description {\n  display: block;\n  margin-bottom: 8px;\n}\n\n.picked-number__input {\n  width: 35px;\n  height: 35px;\n  margin-left: 8px;\n  text-align: center;\n}\n\n.picked-number__input:first-of-type {\n  margin-left: 0;\n}\n\n.bonus-number__box {\n  text-align: right;\n}\n\n.picked-numbers__check-button {\n  width: 100%;\n  height: 36px;\n}\n\n.result-modal__background {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  display: none;\n  justify-content: center;\n  align-items: center;\n  background-color: var(--color-dimmed);\n}\n\n.result-modal__background.open {\n  display: flex;\n}\n\n.result-modal__section {\n  position: relative;\n  width: 350px;\n  height: 500px;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  padding: 40px 16px 49px;\n  background-color: var(--color-white);\n  border-radius: 4px;\n}\n\n.result-modal__heading2 {\n  font-size: 20px;\n  margin-bottom: 32px;\n}\n\n.result-modal__grid-container {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-template-rows: repeat(6, 1fr);\n  width: 100%;\n  margin-bottom: 16px;\n}\n\n.result-modal__grid-item {\n  line-height: 24px;\n  height: 40px;\n  text-align: center;\n  padding: 8px 0;\n  border-bottom: 1px solid var(--color-grid-border);\n}\n\n.result-modal__grid-item:nth-child(1),\n.result-modal__grid-item:nth-child(2),\n.result-modal__grid-item:nth-child(3) {\n  font-weight: 600;\n  border-top: 1px solid var(--color-grid-border);\n}\n\n.result-modal__profit-ratio-description {\n  font-weight: 600;\n  margin-bottom: 32px;\n}\n\n.result-modal__close {\n  background-color: var(--color-white);\n  color: black;\n  width: 14px;\n  height: 14px;\n  position: absolute;\n  top: 16px;\n  right: 16px;\n}\n\n.result-modal__reset {\n  width: 152px;\n  height: 36px;\n}\n", "",{"version":3,"sources":["webpack://./src/css/index.css"],"names":[],"mappings":"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","sourcesContent":[":root {\n  --color-primary: #00bcd4;\n  --color-lighten: #80deea;\n  --color-placeholder: #8b8b8b;\n  --color-border: #b4b4b4;\n  --color-white: white;\n  --color-dimmed: rgba(0, 0, 0, 0.5);\n  --color-unchecked-round: #ededed;\n  --color-unchecked-slide: rgba(33, 33, 33, 0.08);\n  --color-body: #f9f9f9;\n  --color-main-border: rgba(0, 0, 0, 0.12);\n  --color-grid-border: #dcdcdc;\n  --color-disabled: #ccc;\n}\n\n* {\n  box-sizing: border-box;\n  margin: 0;\n  padding: 0;\n}\n\nli {\n  list-style: none;\n}\n\np,\nlabel {\n  line-height: 24px;\n}\n\nhtml {\n  width: 100%;\n  min-height: 100vh;\n}\n\nbody {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  background-color: var(--color-body);\n  min-height: 100vh;\n}\n\ninput::-webkit-outer-spin-button,\ninput::-webkit-inner-spin-button {\n  -webkit-appearance: none;\n}\n\ninput:focus {\n  border-color: blue;\n}\n\ninput:disabled {\n  background-color: var(--color-disabled);\n}\n\nbutton:disabled {\n  background-color: var(--color-disabled);\n}\n\n.scroll-block {\n  overflow: hidden !important;\n}\n\n.display {\n  display: block !important;\n}\n\nmain {\n  background-color: var(--color-white);\n  border: 1px solid var(--color-main-border);\n  border-radius: 4px;\n  min-height: 727px;\n  position: relative;\n}\n\ninput {\n  border: 1px solid var(--color-border);\n  outline: 0;\n  border-radius: 4px;\n}\n\ninput::placeholder {\n  color: var(--color-placeholder);\n}\n\nbutton {\n  background-color: var(--color-primary);\n  color: var(--color-white);\n  border: none;\n  border-radius: 4px;\n  cursor: pointer;\n}\n\n#app {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  width: 414px;\n  padding: 0 16px;\n}\n\nh1 {\n  margin-top: 52px;\n  margin-bottom: 16px;\n  line-height: 36px;\n}\n\n.purchase__form {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-start;\n  margin-bottom: 28px;\n  width: 100%;\n}\n\n.purchase__description {\n  font-size: 15px;\n}\n\n.purchase__input-container {\n  display: flex;\n  justify-content: space-between;\n}\n\n.purchase__input {\n  width: 310px;\n  height: 36px;\n  margin-right: 16px;\n  padding-left: 8px;\n}\n\n.purchase__submit {\n  width: 56px;\n  height: 36px;\n}\n\n.lotto-list__section {\n  width: 100%;\n  margin-bottom: 14px;\n  display: none;\n}\n\n.lotto-list__header {\n  display: flex;\n  justify-content: space-between;\n}\n\n.lotto-list__description {\n  font-size: 15px;\n  font-weight: 400;\n}\n\n.lotto-list__toggle-container {\n  display: flex;\n  flex-direction: column;\n  position: relative;\n}\n\n.toggle {\n  position: absolute;\n  display: inline-block;\n  bottom: -29px;\n  right: 34px;\n}\n\n.toggle .lotto-list__toggle-input {\n  opacity: 0;\n  width: 0;\n  height: 0;\n}\n\n.slider {\n  position: absolute;\n  cursor: pointer;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  background-color: var(--color-unchecked-slide);\n  -webkit-transition: 0.4s;\n  transition: 0.4s;\n}\n\n.slider:before {\n  position: absolute;\n  content: '';\n  height: 20px;\n  width: 20px;\n  left: 0px;\n  bottom: -3px;\n  background-color: var(--color-unchecked-round);\n  -webkit-transition: 0.4s;\n  transition: 0.4s;\n  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.68);\n}\n\n.slider.round {\n  border-radius: 34px;\n  width: 34px;\n  height: 14px;\n}\n\n.slider.round:before {\n  border-radius: 50%;\n}\n\n.lotto-list__toggle-input:checked + .slider:before {\n  -webkit-transform: translateX(14px);\n  -ms-transform: translateX(14px);\n  transform: translateX(14px);\n  background-color: var(--color-primary);\n}\n\n.lotto-list__toggle-input:checked + .slider {\n  background-color: var(--color-lighten);\n}\n\n.lotto-lists {\n  display: flex;\n  flex-wrap: wrap;\n  margin-right: 40px;\n}\n\n.lotto-lists.unfold {\n  flex-direction: column;\n}\n\n.lotto-list {\n  display: flex;\n  align-items: center;\n}\n\n.lotto-list__ticket {\n  display: inline-block;\n  font-size: 34px;\n  margin-right: 8px;\n}\n\n.lotto-list__ticket:last-child {\n  margin-right: 0;\n}\n\n.lotto-list__numbers {\n  display: none;\n}\n\n.lotto-lists.unfold .lotto-list__numbers {\n  display: inline;\n}\n\n.picked-numbers-form {\n  width: 100%;\n  font-size: 15px;\n  display: none;\n}\n\n.picked-numbers__description {\n  letter-spacing: 0.5px;\n  margin-bottom: 8px;\n}\n\n.picked-numbers__container {\n  display: flex;\n  justify-content: space-between;\n  margin-bottom: 24px;\n}\n\n.picked-number__description {\n  display: block;\n  margin-bottom: 8px;\n}\n\n.picked-number__input {\n  width: 35px;\n  height: 35px;\n  margin-left: 8px;\n  text-align: center;\n}\n\n.picked-number__input:first-of-type {\n  margin-left: 0;\n}\n\n.bonus-number__box {\n  text-align: right;\n}\n\n.picked-numbers__check-button {\n  width: 100%;\n  height: 36px;\n}\n\n.result-modal__background {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  display: none;\n  justify-content: center;\n  align-items: center;\n  background-color: var(--color-dimmed);\n}\n\n.result-modal__background.open {\n  display: flex;\n}\n\n.result-modal__section {\n  position: relative;\n  width: 350px;\n  height: 500px;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  padding: 40px 16px 49px;\n  background-color: var(--color-white);\n  border-radius: 4px;\n}\n\n.result-modal__heading2 {\n  font-size: 20px;\n  margin-bottom: 32px;\n}\n\n.result-modal__grid-container {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-template-rows: repeat(6, 1fr);\n  width: 100%;\n  margin-bottom: 16px;\n}\n\n.result-modal__grid-item {\n  line-height: 24px;\n  height: 40px;\n  text-align: center;\n  padding: 8px 0;\n  border-bottom: 1px solid var(--color-grid-border);\n}\n\n.result-modal__grid-item:nth-child(1),\n.result-modal__grid-item:nth-child(2),\n.result-modal__grid-item:nth-child(3) {\n  font-weight: 600;\n  border-top: 1px solid var(--color-grid-border);\n}\n\n.result-modal__profit-ratio-description {\n  font-weight: 600;\n  margin-bottom: 32px;\n}\n\n.result-modal__close {\n  background-color: var(--color-white);\n  color: black;\n  width: 14px;\n  height: 14px;\n  position: absolute;\n  top: 16px;\n  right: 16px;\n}\n\n.result-modal__reset {\n  width: 152px;\n  height: 36px;\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
